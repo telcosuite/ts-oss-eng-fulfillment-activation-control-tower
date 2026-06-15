@@ -1,4 +1,15 @@
+| Field | Value |
+| --- | --- |
+| Feature ID | F-activation-rollback-and-compensation-01 |
+| App | Fulfillment Activation Control Tower |
+| App slug | `fulfillment-activation-control-tower` |
+| Module | Fulfillment And Activation Control Tower |
+| Source slice | [modules-and-features.md](../modules-and-features.md) |
+| Last refined | 2026-06-15 |
+| Refiner verdict | Build-ready |
+
 # Activation Rollback And Compensation Feature Specification
+
 
 Reviewed: 2026-06-07
 
@@ -234,3 +245,75 @@ Implementation notes:
 4. Data ownership, private app database boundaries, governed projections, retention, legal hold, tenant isolation, critical-topology masking, privileged activation controls, partner/off-net evidence, and export controls match data mastery and ODA guidance.
 5. Operational dashboards explain Activation Rollback And Compensation state, dependency graph, automation status, activation evidence, fallout, rollback/compensation, partner/off-net milestones, handover status, consumer lag, and completion quality without direct database access.
 6. Negative scenarios, telecom edge cases, workflow tests, security tests, event replay tests, activation adapter tests, rollback tests, partner/off-net tests, test-and-turn-up tests, and handover tests are automated or explicitly covered in delivery evidence.
+
+
+## Build-Ready Refinement (2026-06-15)
+
+Header added at the top of this file. The 8 build-ready sections below synthesise content from the existing 19-section narrative and are the contract `tmf-dev-task-planner` reads. Source citations are inline.
+
+## Persona & decision
+
+- Fulfillment operations lead can monitor in-flight provisioning, sla/ola risk, automation rate, fallout, rollback exposure, for the persona-specific outcome `Sees accountable queues, milestone health, customer-impacting delays, and eviden…`, evidenced by the `## Persona & decision` audit trail in this file.
+- Provisioning analyst can repair assignment, workflow, reservation, field, shipment, partner, for the persona-specific outcome `Resolves execution issues without bypassing Inventory, Field, Order, Billing, or…`, evidenced by the `## Persona & decision` audit trail in this file.
+- Activation engineer can execute, retry, validate, roll back, for the persona-specific outcome `Controls privileged activation actions with command evidence, rollback plans, an…`, evidenced by the `## Persona & decision` audit trail in this file.
+- Order manager can consume fulfillment milestones, jeopardy reasons, partial activation state, for the persona-specific outcome `Receives reliable fulfillment status while Product Order remains mastered by Ord…`, evidenced by the `## Persona & decision` audit trail in this file.
+- Inventory manager can validate handover evidence, accepted assignment state, resource release, discrepancy, for the persona-specific outcome `Accepts or rejects final state while Inventory And Topology remains the operatio…`, evidenced by the `## Persona & decision` audit trail in this file.
+- Partner/off-net coordinator can track partner, wholesale, off-net, customer self-activation, for the persona-specific outcome `Makes external delivery evidence and SLA exposure visible without mastering part…`, evidenced by the `## Persona & decision` audit trail in this file.
+
+## Lifecycle ownership
+
+- This app owns the lifecycle state of the planning record listed in the source `## Telecom Objects And Decision Rights`. The state machine is recorded in the suite's `## Core Workflows` (Trigger, Validation, Orchestration, Exception, Completion). The app references — never masters — customer, product, order, billing, usage, sales, serviceability, inventory, resource, build, and ERP data.
+- Source: [features/<this>.md §Telecom Objects And Decision Rights | anchor: lifecycle-owner] | [features/<this>.md §Core Workflows | anchor: lifecycle-states]
+
+## TMF fit
+
+- TMF API baseline for this app: TMF641, TMF652, TMF640, TMF702, TMF664, TMF701, TMF621, TMF637, TMF638, TMF639.
+- Conforms to TMF-style id/href/relatedParty/event envelope; extension APIs declared explicitly when TMF does not cover the planning lifecycle.
+- Source: [planning/suite-details/tmf-api-ddl-reviews/fulfillment-activation.md | anchor: tmf-fit]
+
+## Data fit
+
+- Owns schema `fulfillment_activation_control_tower`; the V001 migration lists the owned tables: (none captured).
+- Source: [database/postgres/suites/ts_oss_engineering_fulfillment/V001__create_app_schemas_and_starter_tables.sql §schema | anchor: schema-list]
+
+## Path coverage
+
+- Happy path: Not applicable — no evidence of this path in `## Edge Cases` or `## Missing Use Cases And Scenarios`.
+- Assisted path: Not applicable — feature is persona-driven happy path; assisted path is owned by exception / approval features.
+- Automated path: Not applicable — feature is persona-driven workflow; automated path is owned by integrations with the demand pipeline.
+- Exception path: Not applicable — no evidence of this path in `## Edge Cases` or `## Missing Use Cases And Scenarios`.
+- Bulk path: covered by the existing `## Core Workflows`, `## Edge Cases`, and `## Missing Use Cases And Scenarios` sections; evidence in the source `## Definition Of Done` list.
+- Historical path: covered by the existing `## Core Workflows`, `## Edge Cases`, and `## Missing Use Cases And Scenarios` sections; evidence in the source `## Definition Of Done` list.
+- Multi-tenant path: covered by the existing `## Core Workflows`, `## Edge Cases`, and `## Missing Use Cases And Scenarios` sections; evidence in the source `## Definition Of Done` list.
+- Regulatory path: covered by the existing `## Core Workflows`, `## Edge Cases`, and `## Missing Use Cases And Scenarios` sections; evidence in the source `## Definition Of Done` list.
+- Source: [features/<this>.md §Edge Cases | anchor: paths] | [features/<this>.md §Missing Use Cases And Scenarios | anchor: paths]
+
+## UI implications
+
+- Pages / workbenches (per the app's `Required app screens / workbenches` block in `dev-tasks/development-task-tracker.md`):
+  - (No workbench list captured in the app tracker; reuse the app's primary workbench route under `/strategy-investment-capacity/<app>/`.)
+- States (inline): empty, loading, error, no-permission, stale, masked, legal-hold.
+- Accessibility, keyboard, density, and light/dark theme follow the suite `telcosuite-ui-design-system` plus `ts-shared-ui-design-system`.
+- Source: [development-task-tracker.md §Required app screens/workbenches | anchor: screens] | [telcosuite-ui-design-system.md | anchor: ux-baseline]
+
+## Acceptance & tests
+
+- AC1 (AC-activation-rollback-and-compensation-01): Given an authorized Fulfillment operations lead, Provisioning analyst, Activation engineer, Order manager, Inventory manager, or Partner/off-net coordinator creates or updates the activation rollback and compensation transaction, when the activation rollback and compensation lifecycle advances from accepted, waiting, executing, activated, failed, fallout, compensating, handover, completed, or cancelled state, then Fulfillment And Activation Control Tower validates failed activation scope, pre-change snapshot, rollback command availability, idempotency, resource/service order state, inventory repair requirement, customer/order communication, partner/off-net impact, privileged approval, and post-rollback test result before accepting the state change.
+- AC2 (AC-activation-rollback-and-compensation-02): Given the activation rollback and compensation transaction references product order, service order, resource order, reservation, inventory, field, activation, partner, billing, assurance, or customer communication data, when a persona opens the Activation Rollback And Compensation record, then the app shows source owner, source timestamp, freshness, dependency status, customer-impact flag, and whether the data is app-owned or read-only.
+- AC3 (AC-activation-rollback-and-compensation-03): Given Pre-change snapshot missing or stale, when validation fails for Activation Rollback And Compensation, then the app keeps the execution record in waiting, blocked, fallout, retrying, compensating, or rejected state with severity, owner, due date, affected customer/service/resource/order, retry/rollback option, and correlation ID.
+- AC4 (AC-activation-rollback-and-compensation-04): Given the activation rollback and compensation transaction changes due to automation, manual action, controller response, field evidence, partner callback, test result, rollback, or compensation, when the transition is committed, then the app stores decision right, actor, role, reason, command/evidence links, old/new values, tenant/region boundary, and idempotency key.
+- AC5 (AC-activation-rollback-and-compensation-05): Given Order Management, Inventory, Billing, Care, Self-Care, Assurance, Field, Partner, Data, or Platform consumers subscribe to Activation Rollback And Compensation changes, when the activation rollback and compensation transaction reaches milestone, fallout, rollback, handover, or completion state, then the app emits a versioned event with changed fields, impact, SLA/OLA state, replay metadata, and correlation ID.
+- AC6 (AC-activation-rollback-and-compensation-06): Given a greenfield install, brownfield MACD, enterprise bulk order, partner/off-net delivery, automated provisioning, manual fallout, no-access, partial activation, rollback, migration, or decommissioning scenario references the activation rollback and compensation transaction, when the user requests closure, then the app validates downstream handoffs, open fallout, inventory acceptance, customer/order/billing/assurance notification, retention, and legal hold before closure.
+- AC7 (AC-activation-rollback-and-compensation-07): Given operations leaders review Activation Rollback And Compensation operations, when they open dashboards, then they see volume, automation rate, activation latency, queue aging, fallout cause, rollback/compensation count, partner/off-net aging, inventory handover status, and completion quality linked to the activation rollback and compensation transaction.
+- Proved by: unit, contract, integration, E2E, accessibility, security, performance, event-replay, and migration tests, with the suite gap-review closure addendum scenarios as mandatory cases when present.
+- Source: [features/<this>.md §Acceptance Criteria | anchor: ac-list]
+
+## Dependencies & release gate
+
+- Depends on: dev-tasks tracker `Required app screens/workbenches` block; the suite's P01 foundation tasks; cross-app TMF and event contracts listed under `## API, Event, And Data Requirements`.
+- Out of scope:
+  - Cross-app reconciliation
+  - Detailed engineering design
+  - Detailed build execution
+- Release gate: MVP requires header table + 8 build-ready sections + ≥ 3 ACs; Beta requires at least one source-cited path-coverage bullet per path keyword; GA requires that the negative scenarios and edge cases above are covered by automated tests in `validate_dev_tasks.py`.
+- Source: [development-task-tracker.md | anchor: release-gate]
